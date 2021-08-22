@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { obtenerDiferenciaYear, calcularMarca, obtenerPlan } from '../helpers';
+import { useForm } from '../hooks/useForm';
 
 const Campo = styled.div`
   display: flex;
@@ -53,24 +54,20 @@ const Error = styled.div`
 `;
 
 export const Formulario = ({ guardarCotizacion, cargandoCotizacion }) => {
-  const [datos, setDatos] = useState({
+  const initialState = {
     marca: '',
     year: '',
     plan: ''
-  });
+  };
 
+  // Leer los datos del formulario y colocarlos en el state
+  const [datos, handleInputChange] = useForm(initialState);
+
+  // State de errores en el Formulario
   const [error, setError] = useState(false);
 
   // Extraer los valores del state
   const { marca, year, plan } = datos;
-
-  // Leer los datos del formulario y colocarlos en el state
-  const handleChange = e => {
-    setDatos({
-      ...datos,
-      [e.target.name]: e.target.value
-    });
-  };
 
   // Cuando se envía el Formulario
   const handleSubmit = e => {
@@ -113,6 +110,7 @@ export const Formulario = ({ guardarCotizacion, cargandoCotizacion }) => {
       cargandoCotizacion(false);
 
       // Resultado
+      // Se manda la cotización para mostrarlo en el componente Cotizacion
       guardarCotizacion({
         cotizacionTotal: Number(resultado),
         datos
@@ -125,7 +123,7 @@ export const Formulario = ({ guardarCotizacion, cargandoCotizacion }) => {
       {error && <Error>Todos los campos son obligatorios</Error>}
       <Campo>
         <Label>Marca</Label>
-        <Select name="marca" value={marca} onChange={handleChange}>
+        <Select name="marca" value={marca} onChange={handleInputChange}>
           <option value="">--Seleccione--</option>
           <option value="americano">Americano</option>
           <option value="europeo">Europeo</option>
@@ -135,7 +133,7 @@ export const Formulario = ({ guardarCotizacion, cargandoCotizacion }) => {
 
       <Campo>
         <Label>Año</Label>
-        <Select name="year" value={year} onChange={handleChange}>
+        <Select name="year" value={year} onChange={handleInputChange}>
           <option value="">--Seleccione--</option>
           <option value="2021">2021</option>
           <option value="2020">2020</option>
@@ -157,7 +155,7 @@ export const Formulario = ({ guardarCotizacion, cargandoCotizacion }) => {
           name="plan"
           value="basico"
           checked={plan === 'basico'}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
         Básico
         <InputRadio
@@ -165,7 +163,7 @@ export const Formulario = ({ guardarCotizacion, cargandoCotizacion }) => {
           name="plan"
           value="completo"
           checked={plan === 'completo'}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
         Completo
       </Campo>
